@@ -1,0 +1,8 @@
+Zaklasyfikuj tekst do jednego stanu:
+ANXIETY, AGGRESSION, NUMBNESS, SHAME, HUMOR_MASK, WITHDRAWAL
+
+Jeśli występuje autoagresja, groźby lub derealizacja → risk HIGH.
+W innym przypadku → risk LOW.
+
+Zwróć wyłącznie JSON:
+{ "state": "...", "risk": "LOW|HIGH" }
