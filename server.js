@@ -24,7 +24,10 @@ app.post('/message', async (req, res) => {
   res.json(result);
 });
 
-app.listen(3001, () => {
-  console.log('PROP backend running on http://localhost:3001');
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`PROP backend running on port ${PORT}`);
+});
 });
 //force deploy 
