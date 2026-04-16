@@ -36,8 +36,8 @@ app.post("/message", async (req, res) => {
 
     if (!lastTime) {
       timeContext = "new";
-    } else if (now - lastTime > 5000) {
-// 5 sekund do testów
+    } else if (now - lastTime > 1000 *60 * 16) {
+
       timeContext = "return";
     }
 
