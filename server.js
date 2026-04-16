@@ -28,7 +28,7 @@ app.post("/message", async (req, res) => {
 
     if (!lastMessageTime) {
       timeContext = "new";
-    } else if (now - lastMessageTime > 1000 * 60 * 60) {
+    } else if (now - lastMessageTime > 1000 * 60 * 5) {
       timeContext = "return"; // >1h przerwy
     }
 
