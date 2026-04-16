@@ -10,35 +10,48 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 10000;
 
-//PAMIĘĆ CZASU (MVP)
-let lastMessageTime = null;
+//PAMIĘĆ UŻYTKOWNIKÓW (MVP)
+const userSessions = {};
 
 app.post("/message", async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, userId = "default-user" } = req.body;
 
     if (!text) {
       return res.status(400).json({ error: "Brak tekstu" });
     }
 
-//TIME CONTEXT
+//TIME CONTEXT PER USER
     const now = Date.now();
+
+    if (!userSessions[userId]) {
+      userSessions[userId] = {
+        lastMessageTime: null,
+      };
+    }
 
     let timeContext = "continuous";
 
-    if (!lastMessageTime) {
+    const lastTime = userSessions[userId].lastMessageTime;
+
+    if (!lastTime) {
       timeContext = "new";
-    } else if (now - lastMessageTime > 1000 * 60 * 5) {
-      timeContext = "return"; // >1h przerwy
+    } else if (now - lastTime > 5000) {
+// 5 sekund do testów
+      timeContext = "return";
     }
 
-    lastMessageTime = now;
+    userSessions[userId].lastMessageTime = now;
 
 //ANALIZA
     const analysis = await classify(text);
 
 //ODPOWIEDŹ
-    const result = await respond({ text, analysis, timeContext });
+    const result = await respond({
+      text,
+      analysis,
+      timeContext,
+    });
 
     res.json({
       reply: result.reply,
