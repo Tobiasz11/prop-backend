@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 10000;
 
-//PAMIĘĆ UŻYTKOWNIKÓW (MVP)
+// 🧠 PAMIĘĆ UŻYTKOWNIKÓW
 const userSessions = {};
 
 app.post("/message", async (req, res) => {
@@ -21,36 +21,49 @@ app.post("/message", async (req, res) => {
       return res.status(400).json({ error: "Brak tekstu" });
     }
 
-//TIME CONTEXT PER USER
     const now = Date.now();
 
+    // 🔹 tworzenie usera jeśli nie istnieje
     if (!userSessions[userId]) {
       userSessions[userId] = {
         lastMessageTime: null,
+        topics: [],
+        states: [],
       };
     }
 
+    const session = userSessions[userId];
+
+    // 🧠 TIME CONTEXT
     let timeContext = "continuous";
 
-    const lastTime = userSessions[userId].lastMessageTime;
-
-    if (!lastTime) {
+    if (!session.lastMessageTime) {
       timeContext = "new";
-    } else if (now - lastTime > 1000 *60 * 16) {
-
+    } else if (now - session.lastMessageTime > 1000 * 60 * 16) {
       timeContext = "return";
     }
 
-    userSessions[userId].lastMessageTime = now;
+    session.lastMessageTime = now;
 
-//ANALIZA
+    // 🧠 ANALIZA
     const analysis = await classify(text);
 
-//ODPOWIEDŹ
+    // 🧠 ZAPIS PAMIĘCI
+    session.states.push(analysis.state);
+
+    // 🔹 prosty topic (z tekstu)
+    session.topics.push(text);
+
+    // 🔹 ograniczenie pamięci
+    if (session.states.length > 10) session.states.shift();
+    if (session.topics.length > 10) session.topics.shift();
+
+    // 💬 ODPOWIEDŹ
     const result = await respond({
       text,
       analysis,
       timeContext,
+      memory: session,
     });
 
     res.json({
@@ -58,6 +71,7 @@ app.post("/message", async (req, res) => {
       mode: result.mode,
       analysis,
       timeContext,
+      memory: session,
     });
   } catch (err) {
     console.error(err);

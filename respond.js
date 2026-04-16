@@ -4,7 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function respond({ text, analysis, timeContext }) {
+export async function respond({ text, analysis, timeContext, memory }) {
   const { intent, regulation } = analysis;
 
   let mode = "normal";
@@ -14,6 +14,12 @@ export async function respond({ text, analysis, timeContext }) {
 
   const systemPrompt = `
 Jesteś rozmówcą, nie chatbotem.
+
+Ostatnie emocje użytkownika: ${memory.states.join(", ")}
+Ostatnie tematy: ${memory.topics.slice(-3).join(" | ")}
+
+Możesz delikatnie nawiązać do wcześniejszych rzeczy, jeśli pasuje.
+Nie rób tego zawsze.
 
 Styl:
 - mów naturalnie, po ludzku
