@@ -1,33 +1,59 @@
-import OpenAI from 'openai';
-import fs from 'fs';
-import { SAFETY_MESSAGE } from './safety.js';
+import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const systemPrompt = fs.readFileSync('./prompts/system_suprop.txt', 'utf8');
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-export async function respond({ text, state, risk }) {
-  if (risk === 'HIGH') {
-    return { type: 'SAFETY', message: SAFETY_MESSAGE };
-  }
+export async function respond({ text, analysis }) {
+  const { intent, regulation } = analysis;
 
-  if (state === 'AGGRESSION' || state === 'ANXIETY') {
-    return {
-      type: 'GESTURE',
-      message: 'Jeśli jest za dużo, możesz po prostu przytrzymać ekran.'
-    };
-  }
+  let mode = "normal";
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+  if (intent === "vent") mode = "vent";
+  if (regulation === "dysregulated") mode = "regulate";
+
+  const systemPrompt = `
+Jesteś rozmówcą, osobą której można zaufać, nie chatbotem.
+
+Styl:
+- mów naturalnie, po ludzku
+- unikaj "brzmi jak", "rozumiem że"
+- możesz używać luźnych zwrotów
+- nie bądź perfekcyjny
+
+Zasady:
+- max 1 pytanie
+- czasem bez pytania
+- krótsze odpowiedzi
+
+Tryb: ${mode}
+
+TRYBY:
+
+VENT:
+- pozwól się wygadać
+- nie analizuj za dużo
+- bądź obecny
+
+REGULATE:
+- uspokajaj
+- zwalniaj rozmowę
+- skup się na emocji
+
+NORMAL:
+- naturalna rozmowa
+`;
+
+  const res = await openai.chat.completions.create({
+    model: "gpt-4o",
     messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: text }
+      { role: "system", content: systemPrompt },
+      { role: "user", content: text },
     ],
-    temperature: 0.4
   });
 
   return {
-    type: 'MESSAGE',
-    message: completion.choices[0].message.content
+    reply: res.choices[0].message.content,
+    mode,
   };
 }

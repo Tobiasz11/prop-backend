@@ -18,8 +18,8 @@ app.use(express.json());
 app.post('/message', async (req, res) => {
   const text = (req.body.text || '').trim();
 
-  const { state, risk } = await classify(text);
-  const result = await respond({ text, state, risk });
+ const analysis = await classify(text);
+const result = await respond({ text, analysis });
 
   res.json(result);
 });
