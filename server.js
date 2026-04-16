@@ -53,6 +53,7 @@ app.post("/message", async (req, res) => {
 
     // 🔹 prosty topic (z tekstu)
     session.topics.push(text);
+
     // 🧠 DEEP INSIGHT
 	let insight = null;
 
@@ -89,12 +90,11 @@ app.post("/message", async (req, res) => {
   	freq[s] = (freq[s] || 0) + 1;
 	});
 
-	const dominantState = Object.keys(freq).reduce((a, b) =>
- 	 freq[a] > freq[b] ? a : b
+	const dominantStateInsight = Object.keys(stateFreq).reduce((a, 	b) =>  stateFreq[a] > stateFreq[b] ? a : b
 	);
 
     // 🔹 jeśli powtarza się 3+ razy
-	if (freq[dominantState] >= 3) {
+	if (stateFreq[dominantStateInsight] >= 3) {
  	 insight = `Użytkownik często wraca do stanu: 	${dominantState}`;
 	}
 
