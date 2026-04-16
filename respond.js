@@ -4,7 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function respond({ text, analysis }) {
+export async function respond({ text, analysis, timeContext }) {
   const { intent, regulation } = analysis;
 
   let mode = "normal";
@@ -13,7 +13,7 @@ export async function respond({ text, analysis }) {
   if (regulation === "dysregulated") mode = "regulate";
 
   const systemPrompt = `
-Jesteś rozmówcą, osobą której można zaufać, nie chatbotem.
+Jesteś rozmówcą, nie chatbotem.
 
 Styl:
 - mów naturalnie, po ludzku
@@ -28,6 +28,13 @@ Zasady:
 - naturalność
 - brak ocen
 - jeden wątek
+
+Kontekst czasu: ${timeContext}
+
+Jeśli:
+- new → zacznij naturalnie
+- return → zauważ powrót (np. "fajnie, że wróciłeś")
+- continuous → kontynuuj rozmowę
 
 Tryb: ${mode}
 

@@ -1,31 +1,57 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import { classify } from "./classify.js";
+import { respond } from "./respond.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-import { classify } from './classify.js';
-import { respond } from './respond.js';
-
-dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
-
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.post('/message', async (req, res) => {
-  const text = (req.body.text || '').trim();
+const PORT = process.env.PORT || 10000;
 
- const analysis = await classify(text);
-const result = await respond({ text, analysis });
+//PAMIĘĆ CZASU (MVP)
+let lastMessageTime = null;
 
-  res.json(result);
+app.post("/message", async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: "Brak tekstu" });
+    }
+
+//TIME CONTEXT
+    const now = Date.now();
+
+    let timeContext = "continuous";
+
+    if (!lastMessageTime) {
+      timeContext = "new";
+    } else if (now - lastMessageTime > 1000 * 60 * 60) {
+      timeContext = "return"; // >1h przerwy
+    }
+
+    lastMessageTime = now;
+
+//ANALIZA
+    const analysis = await classify(text);
+
+//ODPOWIEDŹ
+    const result = await respond({ text, analysis, timeContext });
+
+    res.json({
+      reply: result.reply,
+      mode: result.mode,
+      analysis,
+      timeContext,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Błąd serwera" });
+  }
 });
 
-const PORT = process.env.PORT || 3001;
-
 app.listen(PORT, () => {
-  console.log(`PROP backend running on port ${PORT}`);
+  console.log(`Server działa na porcie ${PORT}`);
 });
