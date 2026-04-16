@@ -14,7 +14,8 @@ export async function classify(text) {
 Zanalizuj wiadomość użytkownika i zwróć JSON:
 
 {
-  "state": "smutek | lęk | złość | samotność | przeciążenie | neutral",
+  "state": "state": "smutek" | "lęk" | "złość" | "samotność" | "przeciążenie" | "neutral"
+Zwróć tylko JEDEN najbliższy stan (bez łączenia).,
   "intent": "vent | seek_help | reflect | share | resist",
   "intensity": "low | medium | high",
   "regulation": "regulated | dysregulated"
