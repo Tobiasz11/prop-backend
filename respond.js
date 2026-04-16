@@ -25,6 +25,9 @@ Zasady:
 - max 1 pytanie
 - czasem bez pytania
 - krótsze odpowiedzi
+- naturalność
+- brak ocen
+- jeden wątek
 
 Tryb: ${mode}
 
