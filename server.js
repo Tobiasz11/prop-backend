@@ -53,8 +53,35 @@ app.post("/message", async (req, res) => {
 
     // 🔹 prosty topic (z tekstu)
     session.topics.push(text);
-    // 🧠 INSIGHT (prosty wykrywacz wzorców)
+    // 🧠 DEEP INSIGHT
 	let insight = null;
+
+	const stateFreq = {};
+	session.states.forEach((s) => {
+  	stateFreq[s] = (stateFreq[s] || 0) + 1;
+	});
+
+	const dominantState = Object.keys(stateFreq).reduce((a, b) =>
+  	stateFreq[a] > stateFreq[b] ? a : b
+	);
+
+	// 🔹 temat relacji (proste wykrycie)
+	const relationMentions = session.topics.filter((t) =>
+ 	t.toLowerCase().includes("żon") ||
+  	t.toLowerCase().includes("dziewczyn") ||
+  	t.toLowerCase().includes("relac")
+	);
+
+	// 🔹 przeciążenie emocjonalne
+	const highLoad =
+  	stateFreq["przeciążenie"] >= 2 || stateFreq["złość"] >= 2;
+
+	// 🔥 budowa insightu
+	if (relationMentions.length >= 2 && highLoad) {
+ 	insight = "relacja + napięcie";
+	} else if (stateFreq[dominantState] >= 3) {
+  	insight = dominantState;
+	}
 
     // 🔹 najczęstszy stan
 	const freq = {};

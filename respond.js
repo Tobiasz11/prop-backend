@@ -9,7 +9,7 @@ export async function respond({ text, analysis, timeContext, memory, insight }) 
 
   let mode = "normal";
 
-  if (intent.includes("vent")) mode = "vent";
+  if (intent && intent.includes("vent")) mode = "vent";
   if (regulation === "dysregulated") mode = "regulate";
 
   const systemPrompt = `
@@ -50,13 +50,25 @@ Jeśli:
 - regulate → uspokajaj, ale naturalnie
 
 PAMIĘĆ:
-Ostatnie emocje: ${memory.states.join(", ")}
-Ostatnie tematy: ${memory.topics.slice(-3).join(" | ")}
+Ostatnie emocje: ${memory?.states?.join(", ") || "brak"}
+Ostatnie tematy: ${memory?.topics?.slice(-3).join(" | ") || "brak"}
 
 Możesz czasem do tego nawiązać, jeśli pasuje.
 
 INSIGHT:
 ${insight || "brak"}
+
+Jeśli insight = "relacja + napięcie":
+- możesz zasugerować, że sytuacje w relacji powodują napięcie lub zmęczenie
+
+Jeśli insight to emocja (np. "przeciążenie"):
+- możesz zasugerować, że to coś, co wraca i wpływa na użytkownika
+
+Zawsze:
+- mów to naturalnie
+- nie analizuj jak robot
+- raczej jak przemyślenie ("mam wrażenie że...")
+
 Jeśli jest insight:
 - możesz bardzo delikatnie go zasugerować
 - NIE mów tego wprost jak analiza
