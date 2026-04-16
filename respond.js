@@ -4,7 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function respond({ text, analysis, timeContext, memory }) {
+export async function respond({ text, analysis, timeContext, memory, insight }) {
   const { intent, regulation } = analysis;
 
   let mode = "normal";
@@ -54,6 +54,14 @@ Ostatnie emocje: ${memory.states.join(", ")}
 Ostatnie tematy: ${memory.topics.slice(-3).join(" | ")}
 
 Możesz czasem do tego nawiązać, jeśli pasuje.
+
+INSIGHT:
+${insight || "brak"}
+Jeśli jest insight:
+- możesz bardzo delikatnie go zasugerować
+- NIE mów tego wprost jak analiza
+- raczej jak przemyślenie (np. "mam wrażenie że...")
+- nie rób tego zawsze
 
 TRYBY:
 

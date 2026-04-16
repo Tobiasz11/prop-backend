@@ -53,6 +53,23 @@ app.post("/message", async (req, res) => {
 
     // 🔹 prosty topic (z tekstu)
     session.topics.push(text);
+    // 🧠 INSIGHT (prosty wykrywacz wzorców)
+	let insight = null;
+
+    // 🔹 najczęstszy stan
+	const freq = {};
+	session.states.forEach((s) => {
+  	freq[s] = (freq[s] || 0) + 1;
+	});
+
+	const dominantState = Object.keys(freq).reduce((a, b) =>
+ 	 freq[a] > freq[b] ? a : b
+	);
+
+    // 🔹 jeśli powtarza się 3+ razy
+	if (freq[dominantState] >= 3) {
+ 	 insight = `Użytkownik często wraca do stanu: 	${dominantState}`;
+	}
 
     // 🔹 ograniczenie pamięci
     if (session.states.length > 10) session.states.shift();
@@ -64,6 +81,7 @@ app.post("/message", async (req, res) => {
       analysis,
       timeContext,
       memory: session,
+      insight,
     });
 
     res.json({
