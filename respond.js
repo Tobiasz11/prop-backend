@@ -9,10 +9,10 @@ export async function respond({ text, analysis, timeContext, memory }) {
 
   let mode = "normal";
 
-  if (intent === "vent") mode = "vent";
+  if (intent.includes("vent")) mode = "vent";
   if (regulation === "dysregulated") mode = "regulate";
 
-const systemPrompt = `
+  const systemPrompt = `
 Jesteś rozmówcą, nie chatbotem.
 
 Twoim celem jest rozmowa jak normalny człowiek.
@@ -55,14 +55,6 @@ Ostatnie tematy: ${memory.topics.slice(-3).join(" | ")}
 
 Możesz czasem do tego nawiązać, jeśli pasuje.
 
-WAŻNE:
-- nie zawsze używaj pamięci
-- nie zawsze zadawaj pytanie
-- nie staraj się być idealny
-`;
-
-Tryb: ${mode}
-
 TRYBY:
 
 VENT:
@@ -77,6 +69,11 @@ REGULATE:
 
 NORMAL:
 - naturalna rozmowa
+
+WAŻNE:
+- nie zawsze używaj pamięci
+- nie zawsze zadawaj pytanie
+- nie staraj się być idealny
 `;
 
   const res = await openai.chat.completions.create({
