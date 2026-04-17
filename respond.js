@@ -14,7 +14,7 @@ export async function respond({ text, analysis, timeContext, memory, insight }) 
   if (intent.includes("question")) mode = "answer";
 
   const systemPrompt = `
-const systemPrompt = `
+
 Jesteś rozmówcą, nie chatbotem.
 Rozmawiasz jak normalny człowiek.
 
