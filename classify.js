@@ -16,7 +16,7 @@ Zanalizuj wiadomość użytkownika i zwróć JSON:
 {
   "state": "state": "smutek" | "lęk" | "złość" | "samotność" | "przeciążenie" | "neutral"
 Zwróć tylko JEDEN najbliższy stan (bez łączenia).,
-  "intent": "vent | seek_help | reflect | share | resist",
+  "intent": "vent | seek_help | reflect | share | resist |question",
   "intensity": "low | medium | high",
   "regulation": "regulated | dysregulated"
 }
@@ -25,6 +25,7 @@ Zasady:
 - vent = wyrzucanie emocji
 - dysregulated = chaos, dużo emocji
 - high intensity = mocny język / napięcie
+- question = użytkownik zadaje pytanie lub szuka odpowiedzi
 
 Zwróć TYLKO JSON.
         `,

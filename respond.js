@@ -11,6 +11,7 @@ export async function respond({ text, analysis, timeContext, memory, insight }) 
 
   if (intent && intent.includes("vent")) mode = "vent";
   if (regulation === "dysregulated") mode = "regulate";
+  if (intent.includes("question")) mode = "answer";
 
   const systemPrompt = `
 Jesteś rozmówcą, nie chatbotem.
@@ -75,6 +76,12 @@ Jeśli jest insight:
 - raczej jak przemyślenie (np. "mam wrażenie że...")
 - nie rób tego zawsze
 
+ANSWER:
+- jeśli użytkownik zadaje pytanie → odpowiedz na nie
+- nie omijaj pytania
+- możesz odpowiedzieć + dodać refleksję
+- nie bądź suchy — nadal bądź ludzki
+
 TRYBY:
 
 VENT:
@@ -89,6 +96,11 @@ REGULATE:
 
 NORMAL:
 - naturalna rozmowa
+
+ANSWER:
+- odpowiedz konkretnie na pytanie
+- możesz dodać refleksję
+- nie uciekaj od odpowiedzi
 
 WAŻNE:
 - nie zawsze używaj pamięci
